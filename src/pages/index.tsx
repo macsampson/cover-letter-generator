@@ -11,6 +11,8 @@ interface Props {}
 const DragAndDrop: React.FC<Props> = () => {
 	const [isDragging, setIsDragging] = useState(false)
 	const [file, setFile] = useState<File | null>(null)
+	const [text, setText] = useState('')
+	const [apiResponse, setApiResponse] = useState('')
 
 	const handleDragEnter = (e: React.DragEvent<HTMLDivElement>) => {
 		e.preventDefault()
@@ -61,8 +63,6 @@ const DragAndDrop: React.FC<Props> = () => {
 		}
 	}
 
-	const [text, setText] = useState('')
-
 	const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
 		e.preventDefault()
 		const formData = new FormData()
@@ -76,20 +76,25 @@ const DragAndDrop: React.FC<Props> = () => {
 				method: 'POST',
 				body: formData,
 			})
-			// console.log(response)
-			if (!response.ok) {
-				throw new Error('Failed to submit form data')
-			}
+				.then((res) => res.json())
+				.then((data) => setApiResponse(data.message))
+
+			// console.log(apiResponse)
+
+			// if (!response.ok) {
+			// 	throw new Error('Failed to submit form data')
+			// }
 
 			console.log('Form data submitted successfully')
+			// const data = await response.json()
+			// console.log(data)
+			// setApiResponse(data.message)
 		} catch (error) {
 			console.error(error)
 		}
-		// Do something with the submitted text, e.g. send it to a server
-		// console.log(`Submitted text: ${text}`)
 	}
 
-	const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+	const handleInputChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
 		setText(e.target.value)
 	}
 
@@ -122,8 +127,7 @@ const DragAndDrop: React.FC<Props> = () => {
 				</div>
 				<div>
 					<label htmlFor="text-input">Paste Job Description:</label>
-					<input
-						type="text"
+					<textarea
 						id="text-input"
 						value={text}
 						onChange={handleInputChange}
@@ -131,6 +135,7 @@ const DragAndDrop: React.FC<Props> = () => {
 					/>
 				</div>
 				<button type="submit">Submit</button>
+				<textarea id="cover-letter">{apiResponse}</textarea>
 			</form>
 		</main>
 	)

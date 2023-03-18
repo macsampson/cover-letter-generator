@@ -14,14 +14,21 @@ const configuration = new Configuration({
 })
 const openai = new OpenAIApi(configuration)
 
-const createCoverLetter = async () => {
+function generatePrompt(resume: string, jd: any) {
+	return `Please create a cover letter given the following resume and job description. If there are some skills within the job description that are not in the resume, express interest in learning them. please only mention skills that are in the resume.
+			here is the resume: ${resume}
+			here is the job description: ${jd}`
+}
+
+const createCoverLetter = async (resume: string, jd: any) => {
 	const response = await openai.createCompletion({
 		model: 'text-davinci-003',
-		prompt: 'Say this is a test',
-		temperature: 0,
-		max_tokens: 7,
+		prompt: generatePrompt(resume, jd),
+		temperature: 0.1,
+		max_tokens: 1200,
 	})
-	console.log(response.data)
+	// console.log(response.data.choices[0].text)
+	return response.data.choices[0].text
 }
 
 export const config = {
@@ -57,18 +64,17 @@ export default async function handler(
 			return
 		}
 
-		// console.log((file as any).filepath)
-
 		// Do something with the file and text data
 		reader
 			.getText((file as any).filepath)
 			.then(function (data: any) {
-				console.log(data) // handle success
+				// console.log(data) // handle success
+				const response = createCoverLetter(data, fields.text)
+				console.log(response)
+				res.json({ message: response })
 			})
 			.catch(function (error: Error) {
 				console.log(error) // handle error
 			})
-		createCoverLetter()
-		res.status(200).json({ message: 'Upload successful' })
 	})
 }

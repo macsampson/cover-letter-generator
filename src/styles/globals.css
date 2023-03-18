@@ -193,7 +193,7 @@ a {
 		border: 2px dashed #ccc;
 	} */
 
-	input[type='text'] {
+	textarea {
 		width: 100%;
 		box-sizing: border-box;
 		background-color: white;
