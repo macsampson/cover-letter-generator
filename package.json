@@ -12,11 +12,23 @@
     "@types/node": "18.15.3",
     "@types/react": "18.0.28",
     "@types/react-dom": "18.0.11",
+    "any-text": "^1.2.0",
+    "dotenv": "^16.0.3",
     "eslint": "8.36.0",
     "eslint-config-next": "13.2.4",
+    "formidable": "^2.1.1",
+    "multer": "^1.4.5-lts.1",
     "next": "13.2.4",
+    "openai": "^3.2.1",
+    "pdf-parse": "^1.1.1",
     "react": "18.2.0",
     "react-dom": "18.2.0",
     "typescript": "5.0.2"
+  },
+  "devDependencies": {
+    "@types/express-fileupload": "^1.4.1",
+    "@types/formidable": "^2.0.5",
+    "@types/multer": "^1.4.7",
+    "@types/pdf-parse": "^1.1.1"
   }
 }
