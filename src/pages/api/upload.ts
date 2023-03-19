@@ -39,7 +39,7 @@ const createCoverLetter = async (resume: string, jd: any) => {
 		messages: [
 			{
 				role: `system`,
-				content: `You will be given a resume and job description. From the information in the resume, please create a cover letter for the role in the job description. If there are some skills required for the job description that are not in the resume, express interest in learning them.`,
+				content: `You will be given a resume and job description. Using my resume as a reference, please create a cover letter for the role in the job description. If there are some skills required for the job description that are not in the resume, express interest in learning them.`,
 			},
 			{
 				role: `user`,
@@ -47,10 +47,10 @@ const createCoverLetter = async (resume: string, jd: any) => {
 			},
 			{
 				role: `system`,
-				content: `Please create a cover letter from this information.`,
+				content: `Please compose a compelling cover letter in 200 words or less explaining why I am the best fit for this role. Use the StoryBrand Framework.`,
 			},
 		],
-		temperature: 0.2,
+		temperature: 0.9,
 		max_tokens: 1200,
 	})
 	// console.log(response.data.choices[0].message)

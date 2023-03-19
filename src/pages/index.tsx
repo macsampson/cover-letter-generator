@@ -1,12 +1,25 @@
 'use client'
-// import Image from 'next/image'
-// import { Inter } from 'next/font/google'
-import styles from '@/styles/Home.module.css'
+import '@fontsource/roboto/300.css'
+import '@fontsource/roboto/400.css'
+import '@fontsource/roboto/500.css'
+import '@fontsource/roboto/700.css'
+
+// import styles from '@/styles/Home.module.css'
 import React, { useState } from 'react'
 import Button from '@mui/material/Button'
 import { TextField, CircularProgress } from '@mui/material'
+import Grid from '@mui/material/Grid' // Grid version 1
+import Grid2 from '@mui/material/Unstable_Grid2' // Grid version 2
+import InputLabel from '@mui/material/InputLabel'
+import { createTheme, ThemeProvider } from '@mui/material/styles'
 
 // const inter = Inter({ subsets: ['latin'] })
+
+const theme = createTheme({
+	typography: {
+		fontFamily: 'Roboto',
+	},
+})
 
 interface Props {}
 
@@ -104,65 +117,114 @@ const DragAndDrop: React.FC<Props> = () => {
 	}
 
 	return (
-		<main className={styles.main}>
-			<h1>🔥Cover Letter Generator🔥</h1>
-
-			<form onSubmit={handleSubmit}>
-				<div
-					className={`drag-and-drop-container ${isDragging ? 'dragging' : ''}`}
-					onDragEnter={handleDragEnter}
-					onDragLeave={handleDragLeave}
-					onDragOver={handleDragOver}
-					onDrop={handleDrop}
+		<main>
+			<ThemeProvider theme={theme}>
+				<Grid2
+					container
+					spacing={2}
+					justifyContent="center"
+					padding={2}
+					fontFamily="Roboto"
 				>
-					<p>
-						Drag and drop your PDF or Word Resume here, or click to browse local
-						files.
-					</p>
-					<input
-						type="file"
-						accept=".pdf,.doc,.docx,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document"
-						onChange={handleFileChange}
-					/>
-					{file && (
-						<div>
-							<p>{file.name}</p>
-						</div>
-					)}
-				</div>
-				<div>
-					<label htmlFor="text-input">Job Description:</label>
-					<TextField
-						id="text-input"
-						placeholder="Please paste a job description..."
-						value={text}
-						onChange={handleInputChange}
-						className={styles.textBox}
-						multiline
-					/>
-				</div>
-				<Button
-					variant="contained"
-					type="submit"
-					color="success"
-				>
-					Generate Cover Letter
-				</Button>
-				{loading && (
-					<CircularProgress
-						id="loading"
-						thickness={7}
-						color="success"
-					/>
-				)}
-				<TextField
-					id="cover-letter"
-					placeholder="Waiting for cover letter generation..."
-					value={apiResponse}
-					onChange={(e) => setApiResponse(e.target.value)}
-					multiline
-				></TextField>
-			</form>
+					<h1>🔥AI Cover Letter Generator🔥</h1>
+				</Grid2>
+				<form onSubmit={handleSubmit}>
+					<Grid2
+						container
+						spacing={2}
+						justifyContent="center"
+					>
+						<Grid2 lg={6}>
+							<div
+								className={`drag-and-drop-container ${
+									isDragging ? 'dragging' : ''
+								}`}
+								onDragEnter={handleDragEnter}
+								onDragLeave={handleDragLeave}
+								onDragOver={handleDragOver}
+								onDrop={handleDrop}
+							>
+								<p>
+									Drag and drop your PDF or Word Resume here, or browse local
+									files.
+								</p>
+								<input
+									type="file"
+									accept=".pdf,.doc,.docx,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+									onChange={handleFileChange}
+								/>
+								{/* {file && <p>{file.name}</p>} */}
+							</div>
+						</Grid2>
+					</Grid2>
+					<Grid2
+						container
+						spacing={2}
+						justifyContent="center"
+						padding={5}
+					>
+						<Grid2 lg={6}>
+							<InputLabel
+								htmlFor="text-input"
+								style={{ textAlign: 'center' }}
+							>
+								Job Description
+							</InputLabel>
+							<div id="job-description">
+								{/* <label htmlFor="text-input">Job Description:</label> */}
+								<TextField
+									id="text-input"
+									placeholder="Please paste a job description..."
+									value={text}
+									onChange={handleInputChange}
+									// className={styles.textBox}
+									multiline
+									style={{ width: '100%' }}
+								/>
+							</div>
+						</Grid2>
+						<Grid2 lg={6}>
+							<InputLabel
+								htmlFor="text-input"
+								style={{ textAlign: 'center' }}
+							>
+								Cover Letter
+							</InputLabel>
+							<TextField
+								id="cover-letter-result"
+								placeholder="Waiting for cover letter generation..."
+								value={apiResponse}
+								onChange={(e) => setApiResponse(e.target.value)}
+								multiline
+								style={{ width: '100%' }}
+							></TextField>
+							<Grid2
+								container
+								spacing={2}
+								justifyContent="center"
+							>
+								<Grid2>
+									<Button
+										variant="contained"
+										type="submit"
+										color="success"
+									>
+										Generate Cover Letter
+									</Button>
+								</Grid2>
+								<Grid2>
+									{loading && (
+										<CircularProgress
+											thickness={7}
+											color="success"
+										/>
+									)}
+								</Grid2>
+							</Grid2>
+						</Grid2>
+					</Grid2>
+				</form>
+			</ThemeProvider>
 		</main>
 	)
 }
