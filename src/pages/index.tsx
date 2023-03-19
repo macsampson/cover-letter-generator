@@ -3,6 +3,8 @@
 // import { Inter } from 'next/font/google'
 import styles from '@/styles/Home.module.css'
 import React, { useState } from 'react'
+import Button from '@mui/material/Button'
+import { TextField, CircularProgress } from '@mui/material'
 
 // const inter = Inter({ subsets: ['latin'] })
 
@@ -13,6 +15,7 @@ const DragAndDrop: React.FC<Props> = () => {
 	const [file, setFile] = useState<File | null>(null)
 	const [text, setText] = useState('')
 	const [apiResponse, setApiResponse] = useState('')
+	const [loading, SetLoading] = useState(false)
 
 	const handleDragEnter = (e: React.DragEvent<HTMLDivElement>) => {
 		e.preventDefault()
@@ -65,6 +68,7 @@ const DragAndDrop: React.FC<Props> = () => {
 
 	const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
 		e.preventDefault()
+		SetLoading(true)
 		const formData = new FormData()
 		// console.log('this is file:', file)
 		// console.log('this is test:', text)
@@ -77,9 +81,10 @@ const DragAndDrop: React.FC<Props> = () => {
 				body: formData,
 			})
 				.then((res) => res.json())
-				.then((data) => setApiResponse(data.message))
-
-			// console.log(apiResponse)
+				.then((data) => {
+					SetLoading(false)
+					setApiResponse(data.message)
+				})
 
 			// if (!response.ok) {
 			// 	throw new Error('Failed to submit form data')
@@ -126,16 +131,37 @@ const DragAndDrop: React.FC<Props> = () => {
 					)}
 				</div>
 				<div>
-					<label htmlFor="text-input">Paste Job Description:</label>
-					<textarea
+					<label htmlFor="text-input">Job Description:</label>
+					<TextField
 						id="text-input"
+						placeholder="Please paste a job description..."
 						value={text}
 						onChange={handleInputChange}
 						className={styles.textBox}
+						multiline
 					/>
 				</div>
-				<button type="submit">Submit</button>
-				<textarea id="cover-letter">{apiResponse}</textarea>
+				<Button
+					variant="contained"
+					type="submit"
+					color="success"
+				>
+					Generate Cover Letter
+				</Button>
+				{loading && (
+					<CircularProgress
+						id="loading"
+						thickness={7}
+						color="success"
+					/>
+				)}
+				<TextField
+					id="cover-letter"
+					placeholder="Waiting for cover letter generation..."
+					value={apiResponse}
+					onChange={(e) => setApiResponse(e.target.value)}
+					multiline
+				></TextField>
 			</form>
 		</main>
 	)
