@@ -96,6 +96,12 @@ export default async function handler(
 			const data = await reader.getText((file as any).filepath)
 			// console.log(data) // handle success
 			const response = await createCoverLetter(data, fields.text)
+			try {
+				fs.unlinkSync((file as any).filepath)
+				//file removed
+			} catch (err) {
+				console.error(err)
+			}
 			// console.log(response) // handle success
 			if (response) {
 				res.status(200).json({ message: response })
