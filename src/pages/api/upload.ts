@@ -103,12 +103,12 @@ export default async function handler(
 					},
 					{ responseType: 'stream' }
 				)
-				.then((resp) => {
-					resp.data.on('data', (data) => {
+				.then((resp: any) => {
+					resp.data.on('data', (data: any) => {
 						const lines = data
 							.toString()
 							.split('\n')
-							.filter((line) => line.trim() !== '')
+							.filter((line: any) => line.trim() !== '')
 						for (const line of lines) {
 							const message = line.replace(/^data: /, '')
 
@@ -119,7 +119,7 @@ export default async function handler(
 
 							const parsed = JSON.parse(message)
 							if (parsed.choices[0].delta.content) {
-								console.log(parsed)
+								// console.log(parsed)
 								res.write(`${parsed.choices[0].delta.content}`)
 							}
 						}

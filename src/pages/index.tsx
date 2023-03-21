@@ -100,20 +100,22 @@ const DragAndDrop: React.FC<Props> = () => {
 
 			const stream = response.body
 			const reader = stream?.getReader()
-			const decoder = new TextDecoder()
+			if (reader) {
+				const decoder = new TextDecoder()
 
-			// Read data from the stream as it becomes available
-			while (true) {
-				const { done, value } = await reader.read()
-				const text = decoder.decode(value)
+				// Read data from the stream as it becomes available
+				while (true) {
+					const { done, value } = await reader.read()
+					const text = decoder.decode(value)
 
-				console.log(text)
-				resultRef.current = resultRef.current + text
-				setApiResponse(resultRef.current)
+					// console.log(text)
+					resultRef.current = resultRef.current + text
+					setApiResponse(resultRef.current)
 
-				if (done) {
-					// The stream has been fully read
-					break
+					if (done) {
+						// The stream has been fully read
+						break
+					}
 				}
 			}
 
