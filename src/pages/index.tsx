@@ -5,15 +5,13 @@ import '@fontsource/roboto/500.css'
 import '@fontsource/roboto/700.css'
 
 // import styles from '@/styles/Home.module.css'
-import React, { useState } from 'react'
+import React, { useState, useRef, useEffect } from 'react'
 import Button from '@mui/material/Button'
 import { TextField, CircularProgress } from '@mui/material'
 import Grid from '@mui/material/Grid' // Grid version 1
 import Grid2 from '@mui/material/Unstable_Grid2' // Grid version 2
 import InputLabel from '@mui/material/InputLabel'
 import { createTheme, ThemeProvider } from '@mui/material/styles'
-
-// const inter = Inter({ subsets: ['latin'] })
 
 const theme = createTheme({
 	typography: {
@@ -27,8 +25,14 @@ const DragAndDrop: React.FC<Props> = () => {
 	const [isDragging, setIsDragging] = useState(false)
 	const [file, setFile] = useState<File | null>(null)
 	const [text, setText] = useState('')
-	const [apiResponse, setApiResponse] = useState('')
-	const [loading, SetLoading] = useState(false)
+	let [apiResponse, setApiResponse] = useState('')
+	let [loading, SetLoading] = useState(false)
+
+	const resultRef = useRef('')
+
+	useEffect(() => {
+		resultRef.current = apiResponse
+	}, [apiResponse])
 
 	const handleDragEnter = (e: React.DragEvent<HTMLDivElement>) => {
 		e.preventDefault()
@@ -82,7 +86,9 @@ const DragAndDrop: React.FC<Props> = () => {
 	const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
 		e.preventDefault()
 		SetLoading(true)
+		setApiResponse('')
 		const formData = new FormData()
+		const source = new EventSource('/api/upload')
 		formData.append('file', file as Blob)
 		formData.append('text', text)
 		try {
@@ -90,22 +96,86 @@ const DragAndDrop: React.FC<Props> = () => {
 				method: 'POST',
 				body: formData,
 			})
-				.then((res) => res.json())
-				.then((data) => {
-					SetLoading(false)
-					setApiResponse(data.message)
-				})
+			// console.log(response.type)
+
+			const stream = response.body
+			const reader = stream?.getReader()
+			const decoder = new TextDecoder()
+
+			// Read data from the stream as it becomes available
+			while (true) {
+				const { done, value } = await reader.read()
+				const text = decoder.decode(value)
+
+				console.log(text)
+				resultRef.current = resultRef.current + text
+				setApiResponse(resultRef.current)
+
+				if (done) {
+					// The stream has been fully read
+					break
+				}
+			}
+
+			// source.onmessage((event) => console.log(event.data))
+			//   .then(async (response) => {
+			// 	// response.body is a ReadableStream
+			// 	source.onmessage = (response) => console.log(response.data)
+			// 	// do something
+			// })
+
+			// .then((res) => res.json())
+			// .then((data) => {
+			SetLoading(false)
+			// 	setApiResponse(data.message)
+			// })
 
 			// if (!response.ok) {
 			// 	throw new Error('Failed to submit form data')
 			// }
-
 			console.log('Form data submitted successfully')
+
+			// const data = response.data
+			// if (!data) {
+			// 	return
+			// }
+			// const reader = data.getReader()
+			// const decoder = new TextDecoder()
+			// let done = false
+
+			// while (!done) {
+			// 	const { value, done: doneReading } = await reader.read()
+
+			// 	done = doneReading
+
+			// 	const chunkValue = decoder.decode(value)
+			// 	console.log(chunkValue)
+
+			// 	setApiResponse((prev) => prev + chunkValue)
+			// }
+
 			// const data = await response.json()
 			// console.log(data)
 			// setApiResponse(data.message)
+
+			// const events = new EventSource('/api/upload')
+			// events.onmessage = (event) => {
+			// 	console.log(event)
+			// }
 		} catch (error) {
 			console.error(error)
+		}
+	}
+
+	function readChunks(reader: ReadableStreamDefaultReader<Uint8Array>) {
+		return {
+			async *[Symbol.asyncIterator]() {
+				let readResult = await reader.read()
+				while (!readResult.done) {
+					yield readResult.value
+					readResult = await reader.read()
+				}
+			},
 		}
 	}
 
