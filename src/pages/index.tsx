@@ -83,11 +83,8 @@ const DragAndDrop: React.FC<Props> = () => {
 		e.preventDefault()
 		SetLoading(true)
 		const formData = new FormData()
-		// console.log('this is file:', file)
-		// console.log('this is test:', text)
 		formData.append('file', file as Blob)
 		formData.append('text', text)
-		console.log(file)
 		try {
 			const response = await fetch('/api/upload', {
 				method: 'POST',
@@ -153,7 +150,7 @@ const DragAndDrop: React.FC<Props> = () => {
 									accept=".pdf,.doc,.docx,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document"
 									onChange={handleFileChange}
 								/>
-								{/* {file && <p>{file.name}</p>} */}
+								{file && <p>{file.name}</p>}
 							</div>
 						</Grid2>
 					</Grid2>
