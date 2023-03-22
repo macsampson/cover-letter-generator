@@ -53,10 +53,10 @@ export default async function handler(
 	req: NextApiRequest,
 	res: NextApiResponse
 ) {
-	if (req.method !== 'POST') {
-		res.status(405).end()
-		return
-	}
+	// if (req.method !== 'POST') {
+	// 	res.status(405).end()
+	// 	return
+	// }
 
 	const form = formidable.formidable({ keepExtensions: true })
 
@@ -97,7 +97,7 @@ export default async function handler(
 								content: `Please compose a compelling cover letter in 200 words or less explaining why I am the best fit for this role. Use the StoryBrand Framework.`,
 							},
 						],
-						temperature: 0.9,
+						temperature: 0.7,
 						max_tokens: 1200,
 						stream: true,
 					},
@@ -105,10 +105,13 @@ export default async function handler(
 				)
 				.then((resp: any) => {
 					resp.data.on('data', (data: any) => {
+						// const start = Date.now()
 						const lines = data
 							.toString()
 							.split('\n')
 							.filter((line: any) => line.trim() !== '')
+						// const trimDone = Date.now() - start
+						// console.log('trimmed: ', trimDone / 1000)
 						for (const line of lines) {
 							const message = line.replace(/^data: /, '')
 
@@ -118,8 +121,12 @@ export default async function handler(
 							}
 
 							const parsed = JSON.parse(message)
+							// const parseDone = Date.now() - trimDone
+							// console.log(parseDone / 1000)
 							if (parsed.choices[0].delta.content) {
-								// console.log(parsed)
+								console.log(parsed)
+								// const write = Date.now() - start
+								// console.log(write / 1000)
 								res.write(`${parsed.choices[0].delta.content}`)
 							}
 						}
